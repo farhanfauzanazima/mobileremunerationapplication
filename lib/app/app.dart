@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../features/auth/providers/auth_provider.dart';
-import '../features/auth/presentation/screens/splash_screen.dart';
-import '../features/auth/presentation/screens/login_screen.dart';
-import '../features/auth/presentation/screens/profile_screen.dart';
-import '../features/salary_category/providers/salary_category_provider.dart';
-import '../features/salary_category/presentation/screens/salary_category_list_screen.dart';
-import '../features/salary_category/presentation/screens/salary_category_form_screen.dart';
-import '../features/employee/providers/employee_provider.dart';
-import '../features/employee/presentation/screens/employee_list_screen.dart';
-import '../features/employee/presentation/screens/employee_form_screen.dart';
-import '../features/employee/presentation/screens/employee_detail_screen.dart';
-import '../shared/theme/app_theme.dart';
-import '../core/constants/app_constants.dart';
-import 'routes.dart';
+import 'package:mobileremunerationapplication/features/auth/providers/auth_provider.dart';
+import 'package:mobileremunerationapplication/features/auth/presentation/screens/splash_screen.dart';
+import 'package:mobileremunerationapplication/features/auth/presentation/screens/login_screen.dart';
+import 'package:mobileremunerationapplication/features/auth/presentation/screens/profile_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_category/providers/salary_category_provider.dart';
+import 'package:mobileremunerationapplication/features/salary_category/presentation/screens/salary_category_list_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_category/presentation/screens/salary_category_form_screen.dart';
+import 'package:mobileremunerationapplication/features/employee/providers/employee_provider.dart';
+import 'package:mobileremunerationapplication/features/employee/presentation/screens/employee_list_screen.dart';
+import 'package:mobileremunerationapplication/features/employee/presentation/screens/employee_form_screen.dart';
+import 'package:mobileremunerationapplication/features/employee/presentation/screens/employee_detail_screen.dart';
+import 'package:mobileremunerationapplication/features/payroll_period/providers/payroll_period_provider.dart';
+import 'package:mobileremunerationapplication/features/payroll_period/presentation/screens/payroll_period_list_screen.dart';
+import 'package:mobileremunerationapplication/features/payroll_period/presentation/screens/payroll_period_form_screen.dart';
+import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
+import 'package:mobileremunerationapplication/core/constants/app_constants.dart';
+import 'package:mobileremunerationapplication/app/routes.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,6 +28,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => SalaryCategoryProvider()),
         ChangeNotifierProvider(create: (_) => EmployeeProvider()),
+        ChangeNotifierProvider(create: (_) => PayrollPeriodProvider()),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -46,6 +50,10 @@ class App extends StatelessWidget {
           AppRoutes.employeeCreate: (_) => const EmployeeFormScreen(),
           AppRoutes.employeeEdit:   (_) => const EmployeeFormScreen(),
           AppRoutes.employeeDetail: (_) => const EmployeeDetailScreen(),
+
+          // Payroll Period
+          AppRoutes.payrollPeriods:      (_) => const PayrollPeriodListScreen(),
+          AppRoutes.payrollPeriodCreate: (_) => const PayrollPeriodFormScreen(),
 
           // Dashboard placeholder
           AppRoutes.dashboardOwner: (_) => const _DashboardPlaceholder(role: 'Owner'),
@@ -87,7 +95,7 @@ class _DashboardPlaceholder extends StatelessWidget {
                   color: AppTheme.secondary, size: 64),
               const SizedBox(height: 16),
               Text(
-                'Login berhasil sebagai $role ✅',
+                'Login sebagai $role ✅',
                 style: const TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
@@ -112,9 +120,15 @@ class _DashboardPlaceholder extends StatelessWidget {
                       context, AppRoutes.employees),
                 ),
                 const SizedBox(height: 12),
+                _MenuButton(
+                  icon: Icons.date_range_outlined,
+                  label: 'Periode Penggajian',
+                  onTap: () => Navigator.pushNamed(
+                      context, AppRoutes.payrollPeriods),
+                ),
+                const SizedBox(height: 12),
               ],
 
-              const SizedBox(height: 12),
               Consumer<AuthProvider>(
                 builder: (context, auth, _) => _MenuButton(
                   icon: Icons.logout,

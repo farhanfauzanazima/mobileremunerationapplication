@@ -14,14 +14,25 @@ class Formatters {
 
   // Format tanggal: 01 Mei 2026
   static String date(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final date = DateTime.parse(dateStr);
-      return DateFormat('dd MMM yyyy', 'id_ID').format(date);
-    } catch (_) {
-      return dateStr;
-    }
+  if (dateStr == null || dateStr.isEmpty) return '-';
+  try {
+    final cleanDate = dateStr.contains('T')
+        ? dateStr.substring(0, 10)
+        : dateStr;
+    final date = DateTime.parse(cleanDate);
+
+    const months = [
+      '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+    ];
+
+    return '${date.day.toString().padLeft(2, '0')} '
+        '${months[date.month]} '
+        '${date.year}';
+  } catch (_) {
+    return '-';
   }
+}
 
   // Format tanggal + jam: 01 Mei 2026, 14:30
   static String dateTime(String? dateStr) {
