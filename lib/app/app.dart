@@ -14,6 +14,11 @@ import 'package:mobileremunerationapplication/features/employee/presentation/scr
 import 'package:mobileremunerationapplication/features/payroll_period/providers/payroll_period_provider.dart';
 import 'package:mobileremunerationapplication/features/payroll_period/presentation/screens/payroll_period_list_screen.dart';
 import 'package:mobileremunerationapplication/features/payroll_period/presentation/screens/payroll_period_form_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/providers/salary_slip_provider.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_list_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_detail_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_form_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_bulk_screen.dart';
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/constants/app_constants.dart';
 import 'package:mobileremunerationapplication/app/routes.dart';
@@ -29,6 +34,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SalaryCategoryProvider()),
         ChangeNotifierProvider(create: (_) => EmployeeProvider()),
         ChangeNotifierProvider(create: (_) => PayrollPeriodProvider()),
+        ChangeNotifierProvider(create: (_) => SalarySlipProvider()),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -40,22 +46,23 @@ class App extends StatelessWidget {
           AppRoutes.login:    (_) => const LoginScreen(),
           AppRoutes.profile:  (_) => const ProfileScreen(),
 
-          // Salary Category
           AppRoutes.salaryCategories:     (_) => const SalaryCategoryListScreen(),
           AppRoutes.salaryCategoryCreate: (_) => const SalaryCategoryFormScreen(),
           AppRoutes.salaryCategoryEdit:   (_) => const SalaryCategoryFormScreen(),
 
-          // Employee
           AppRoutes.employees:      (_) => const EmployeeListScreen(),
           AppRoutes.employeeCreate: (_) => const EmployeeFormScreen(),
           AppRoutes.employeeEdit:   (_) => const EmployeeFormScreen(),
           AppRoutes.employeeDetail: (_) => const EmployeeDetailScreen(),
 
-          // Payroll Period
           AppRoutes.payrollPeriods:      (_) => const PayrollPeriodListScreen(),
           AppRoutes.payrollPeriodCreate: (_) => const PayrollPeriodFormScreen(),
 
-          // Dashboard placeholder
+          AppRoutes.salarySlips:      (_) => const SalarySlipListScreen(),
+          AppRoutes.salarySlipCreate: (_) => const SalarySlipFormScreen(),
+          AppRoutes.salarySlipDetail: (_) => const SalarySlipDetailScreen(),
+          AppRoutes.salarySlipBulk:   (_) => const SalarySlipBulkScreen(),
+
           AppRoutes.dashboardOwner: (_) => const _DashboardPlaceholder(role: 'Owner'),
           AppRoutes.dashboardHead:  (_) => const _DashboardPlaceholder(role: 'Kepala Toko'),
           AppRoutes.dashboardAdmin: (_) => const _DashboardPlaceholder(role: 'Admin Toko'),
@@ -73,6 +80,7 @@ class _DashboardPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final isOwner = role == 'Owner';
     final isHead  = role == 'Kepala Toko';
+    final isAdmin = role == 'Admin Toko';
 
     return Scaffold(
       appBar: AppBar(
@@ -125,6 +133,16 @@ class _DashboardPlaceholder extends StatelessWidget {
                   label: 'Periode Penggajian',
                   onTap: () => Navigator.pushNamed(
                       context, AppRoutes.payrollPeriods),
+                ),
+                const SizedBox(height: 12),
+              ],
+
+              if (isOwner || isHead || isAdmin) ...[
+                _MenuButton(
+                  icon: Icons.receipt_long_outlined,
+                  label: 'Slip Gaji',
+                  onTap: () => Navigator.pushNamed(
+                      context, AppRoutes.salarySlips),
                 ),
                 const SizedBox(height: 12),
               ],
