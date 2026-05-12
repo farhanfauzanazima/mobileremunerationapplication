@@ -1,18 +1,16 @@
 class AppRoutes {
-  // Auth
   static const String splash  = '/';
   static const String login   = '/login';
   static const String profile = '/profile';
 
-  // Dashboard (per role)
   static const String dashboardOwner = '/dashboard/owner';
   static const String dashboardHead  = '/dashboard/head';
   static const String dashboardAdmin = '/dashboard/admin';
 
   // Salary Category
-  static const String salaryCategories       = '/salary-categories';
-  static const String salaryCategoryCreate   = '/salary-categories/create';
-  static const String salaryCategoryEdit     = '/salary-categories/edit';
+  static const String salaryCategories     = '/salary-categories';
+  static const String salaryCategoryCreate = '/salary-categories/create';
+  static const String salaryCategoryEdit   = '/salary-categories/edit';
 
   // Employee
   static const String employees      = '/employees';
