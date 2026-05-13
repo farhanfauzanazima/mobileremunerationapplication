@@ -1,10 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/data/models/salary_slip_model.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/providers/pdf_provider.dart';
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/utils/formatters.dart';
+import 'package:mobileremunerationapplication/app/routes.dart';
 
 class SalarySlipDetailScreen extends StatelessWidget {
   const SalarySlipDetailScreen({super.key});
+
+  Future<void> _previewPdf(
+      BuildContext context, SalarySlipModel slip) async {
+    final pdfProvider = context.read<PdfProvider>();
+
+    // Tampilkan loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(color: AppTheme.primary),
+            SizedBox(width: 16),
+            Text('Menyiapkan PDF...'),
+          ],
+        ),
+      ),
+    );
+
+    final fileName =
+        'slip-${slip.employeeCode}-${slip.periodName.replaceAll(' ', '-')}.pdf';
+    final result =
+        await pdfProvider.downloadPdf(slip.id, fileName);
+
+    if (!context.mounted) return;
+    Navigator.pop(context); // tutup dialog loading
+
+    if (result['success'] == true) {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.pdfViewer,
+        arguments: {
+          'path':  result['path'],
+          'title': 'Slip - ${slip.employeeName}',
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Gagal memuat PDF'),
+          backgroundColor: AppTheme.accent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  Future<void> _generatePdf(
+      BuildContext context, SalarySlipModel slip) async {
+    final pdfProvider = context.read<PdfProvider>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(color: AppTheme.primary),
+            SizedBox(width: 16),
+            Text('Generate PDF...'),
+          ],
+        ),
+      ),
+    );
+
+    final result = await pdfProvider.generatePdf(slip.id);
+
+    if (!context.mounted) return;
+    Navigator.pop(context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message'] ?? ''),
+        backgroundColor: result['success'] == true
+            ? AppTheme.secondary
+            : AppTheme.accent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,71 +103,118 @@ class SalarySlipDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Header
+            // Header Card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor:
+                          AppTheme.primary.withOpacity(0.1),
+                      child: Text(
+                        slip.employeeName.isNotEmpty
+                            ? slip.employeeName[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          color: AppTheme.primary,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            slip.employeeName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(slip.categoryName,
+                              style: const TextStyle(
+                                  color: AppTheme.textMuted,
+                                  fontSize: 13)),
+                          Text(slip.periodName,
+                              style: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: slip.isSent
+                            ? AppTheme.secondary.withOpacity(0.1)
+                            : AppTheme.warning.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        slip.statusLabel,
+                        style: TextStyle(
+                          color: slip.isSent
+                              ? AppTheme.secondary
+                              : AppTheme.warning,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Tombol PDF Actions
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text('Aksi PDF',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600)),
+                    const Divider(),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundColor:
-                              AppTheme.primary.withOpacity(0.1),
-                          child: Text(
-                            slip.employeeName.isNotEmpty
-                                ? slip.employeeName[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: AppTheme.primary,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                        // Tombol Preview PDF
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () =>
+                                _previewPdf(context, slip),
+                            icon: const Icon(
+                                Icons.picture_as_pdf_outlined),
+                            label: const Text('Preview PDF'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primary,
+                              minimumSize: const Size(0, 44),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
+                        // Tombol Generate PDF
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                slip.employeeName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(slip.categoryName,
-                                  style: const TextStyle(
-                                      color: AppTheme.textMuted,
-                                      fontSize: 13)),
-                              Text(slip.periodName,
-                                  style: const TextStyle(
-                                      color: AppTheme.primary,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: slip.isSent
-                                ? AppTheme.secondary.withOpacity(0.1)
-                                : AppTheme.warning.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            slip.statusLabel,
-                            style: TextStyle(
-                              color: slip.isSent
-                                  ? AppTheme.secondary
-                                  : AppTheme.warning,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
+                          child: OutlinedButton.icon(
+                            onPressed: () =>
+                                _generatePdf(context, slip),
+                            icon: const Icon(
+                                Icons.refresh_outlined),
+                            label: const Text('Generate Ulang'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppTheme.primary,
+                              minimumSize: const Size(0, 44),
                             ),
                           ),
                         ),
@@ -95,7 +226,7 @@ class SalarySlipDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Kehadiran
+            // Rekap Kehadiran
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -112,8 +243,7 @@ class SalarySlipDetailScreen extends StatelessWidget {
                         Expanded(
                           child: _StatBox(
                             label: 'Hari Masuk',
-                            value:
-                                '${slip.totalWorkingDays} hari',
+                            value: '${slip.totalWorkingDays} hari',
                             color: AppTheme.secondary,
                           ),
                         ),
@@ -154,7 +284,6 @@ class SalarySlipDetailScreen extends StatelessWidget {
                             fontWeight: FontWeight.w600)),
                     const Divider(),
 
-                    // Pendapatan
                     _SalaryRow(
                       label: 'Gaji Pokok',
                       value: Formatters.currency(
@@ -174,9 +303,10 @@ class SalarySlipDetailScreen extends StatelessWidget {
                         color: AppTheme.secondary,
                       ),
 
-                    const Divider(height: 20),
+                    if (slip.latePenaltyAmount > 0 ||
+                        slip.additionalDeduction > 0)
+                      const Divider(height: 20),
 
-                    // Potongan
                     if (slip.latePenaltyAmount > 0)
                       _SalaryRow(
                         label:

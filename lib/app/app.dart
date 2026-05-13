@@ -22,6 +22,8 @@ import 'package:mobileremunerationapplication/features/salary_slip/presentation/
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/constants/app_constants.dart';
 import 'package:mobileremunerationapplication/app/routes.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/providers/pdf_provider.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/pdf_viewer_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -35,6 +37,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EmployeeProvider()),
         ChangeNotifierProvider(create: (_) => PayrollPeriodProvider()),
         ChangeNotifierProvider(create: (_) => SalarySlipProvider()),
+        ChangeNotifierProvider(create: (_) => PdfProvider()),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -66,6 +69,8 @@ class App extends StatelessWidget {
           AppRoutes.dashboardOwner: (_) => const _DashboardPlaceholder(role: 'Owner'),
           AppRoutes.dashboardHead:  (_) => const _DashboardPlaceholder(role: 'Kepala Toko'),
           AppRoutes.dashboardAdmin: (_) => const _DashboardPlaceholder(role: 'Admin Toko'),
+
+          AppRoutes.pdfViewer: (_) => const PdfViewerScreen(),
         },
       ),
     );
