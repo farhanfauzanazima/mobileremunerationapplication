@@ -15,15 +15,18 @@ import 'package:mobileremunerationapplication/features/payroll_period/providers/
 import 'package:mobileremunerationapplication/features/payroll_period/presentation/screens/payroll_period_list_screen.dart';
 import 'package:mobileremunerationapplication/features/payroll_period/presentation/screens/payroll_period_form_screen.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/providers/salary_slip_provider.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/providers/pdf_provider.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_list_screen.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_detail_screen.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_form_screen.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/salary_slip_bulk_screen.dart';
+import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/pdf_viewer_screen.dart';
+import 'package:mobileremunerationapplication/features/email/providers/email_provider.dart';
+import 'package:mobileremunerationapplication/features/email/presentation/screens/email_history_screen.dart';
+import 'package:mobileremunerationapplication/features/email/presentation/screens/email_bulk_send_screen.dart';
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/constants/app_constants.dart';
 import 'package:mobileremunerationapplication/app/routes.dart';
-import 'package:mobileremunerationapplication/features/salary_slip/providers/pdf_provider.dart';
-import 'package:mobileremunerationapplication/features/salary_slip/presentation/screens/pdf_viewer_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -38,6 +41,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PayrollPeriodProvider()),
         ChangeNotifierProvider(create: (_) => SalarySlipProvider()),
         ChangeNotifierProvider(create: (_) => PdfProvider()),
+        ChangeNotifierProvider(create: (_) => EmailProvider()),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -49,33 +53,45 @@ class App extends StatelessWidget {
           AppRoutes.login:    (_) => const LoginScreen(),
           AppRoutes.profile:  (_) => const ProfileScreen(),
 
+          // Salary Category
           AppRoutes.salaryCategories:     (_) => const SalaryCategoryListScreen(),
           AppRoutes.salaryCategoryCreate: (_) => const SalaryCategoryFormScreen(),
           AppRoutes.salaryCategoryEdit:   (_) => const SalaryCategoryFormScreen(),
 
+          // Employee
           AppRoutes.employees:      (_) => const EmployeeListScreen(),
           AppRoutes.employeeCreate: (_) => const EmployeeFormScreen(),
           AppRoutes.employeeEdit:   (_) => const EmployeeFormScreen(),
           AppRoutes.employeeDetail: (_) => const EmployeeDetailScreen(),
 
+          // Payroll Period
           AppRoutes.payrollPeriods:      (_) => const PayrollPeriodListScreen(),
           AppRoutes.payrollPeriodCreate: (_) => const PayrollPeriodFormScreen(),
 
+          // Salary Slip
           AppRoutes.salarySlips:      (_) => const SalarySlipListScreen(),
           AppRoutes.salarySlipCreate: (_) => const SalarySlipFormScreen(),
           AppRoutes.salarySlipDetail: (_) => const SalarySlipDetailScreen(),
           AppRoutes.salarySlipBulk:   (_) => const SalarySlipBulkScreen(),
 
+          // PDF
+          AppRoutes.pdfViewer: (_) => const PdfViewerScreen(),
+
+          // Email
+          AppRoutes.emailHistory:  (_) => const EmailHistoryScreen(),
+          AppRoutes.emailBulkSend: (_) => const EmailBulkSendScreen(),
+
+          // Dashboard
           AppRoutes.dashboardOwner: (_) => const _DashboardPlaceholder(role: 'Owner'),
           AppRoutes.dashboardHead:  (_) => const _DashboardPlaceholder(role: 'Kepala Toko'),
           AppRoutes.dashboardAdmin: (_) => const _DashboardPlaceholder(role: 'Admin Toko'),
-
-          AppRoutes.pdfViewer: (_) => const PdfViewerScreen(),
         },
       ),
     );
   }
 }
+
+// ── Dashboard Placeholder ───────────────────────────────────────
 
 class _DashboardPlaceholder extends StatelessWidget {
   final String role;
@@ -115,6 +131,7 @@ class _DashboardPlaceholder extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
+              // Menu Owner only
               if (isOwner) ...[
                 _MenuButton(
                   icon: Icons.category_outlined,
@@ -125,6 +142,7 @@ class _DashboardPlaceholder extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
 
+              // Menu Owner & Head
               if (isOwner || isHead) ...[
                 _MenuButton(
                   icon: Icons.people_outline,
@@ -142,6 +160,7 @@ class _DashboardPlaceholder extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
 
+              // Menu semua role
               if (isOwner || isHead || isAdmin) ...[
                 _MenuButton(
                   icon: Icons.receipt_long_outlined,
@@ -150,8 +169,23 @@ class _DashboardPlaceholder extends StatelessWidget {
                       context, AppRoutes.salarySlips),
                 ),
                 const SizedBox(height: 12),
+                _MenuButton(
+                  icon: Icons.send_outlined,
+                  label: 'Kirim Email Massal',
+                  onTap: () => Navigator.pushNamed(
+                      context, AppRoutes.emailBulkSend),
+                ),
+                const SizedBox(height: 12),
+                _MenuButton(
+                  icon: Icons.history_outlined,
+                  label: 'Riwayat Email',
+                  onTap: () => Navigator.pushNamed(
+                      context, AppRoutes.emailHistory),
+                ),
+                const SizedBox(height: 12),
               ],
 
+              // Logout
               Consumer<AuthProvider>(
                 builder: (context, auth, _) => _MenuButton(
                   icon: Icons.logout,

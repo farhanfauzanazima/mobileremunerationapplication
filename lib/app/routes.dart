@@ -24,10 +24,11 @@ class AppRoutes {
   static const String salarySlipDetail = '/salary-slips/detail';
   static const String salarySlipBulk   = '/salary-slips/bulk';
 
-  // Tambahkan route baru
   static const String pdfViewer = '/pdf-viewer';
 
-  static const String emailHistory = '/email/history';
-  static const String reports      = '/reports';
-  static const String activityLog  = '/activity-logs';
+  static const String emailHistory  = '/email/history';
+  static const String emailBulkSend = '/email/bulk-send';
+
+  static const String reports     = '/reports';
+  static const String activityLog = '/activity-logs';
 }

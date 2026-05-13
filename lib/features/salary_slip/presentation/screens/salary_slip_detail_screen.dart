@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/data/models/salary_slip_model.dart';
 import 'package:mobileremunerationapplication/features/salary_slip/providers/pdf_provider.dart';
+import 'package:mobileremunerationapplication/features/email/providers/email_provider.dart';
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/utils/formatters.dart';
 import 'package:mobileremunerationapplication/app/routes.dart';
@@ -9,11 +10,11 @@ import 'package:mobileremunerationapplication/app/routes.dart';
 class SalarySlipDetailScreen extends StatelessWidget {
   const SalarySlipDetailScreen({super.key});
 
+  // ─── Preview PDF ───────────────────────────────────────────
   Future<void> _previewPdf(
       BuildContext context, SalarySlipModel slip) async {
     final pdfProvider = context.read<PdfProvider>();
 
-    // Tampilkan loading
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -34,7 +35,7 @@ class SalarySlipDetailScreen extends StatelessWidget {
         await pdfProvider.downloadPdf(slip.id, fileName);
 
     if (!context.mounted) return;
-    Navigator.pop(context); // tutup dialog loading
+    Navigator.pop(context);
 
     if (result['success'] == true) {
       Navigator.pushNamed(
@@ -56,6 +57,7 @@ class SalarySlipDetailScreen extends StatelessWidget {
     }
   }
 
+  // ─── Generate PDF ──────────────────────────────────────────
   Future<void> _generatePdf(
       BuildContext context, SalarySlipModel slip) async {
     final pdfProvider = context.read<PdfProvider>();
@@ -90,6 +92,89 @@ class SalarySlipDetailScreen extends StatelessWidget {
     );
   }
 
+  // ─── Kirim Email ───────────────────────────────────────────
+  Future<void> _sendEmail(
+      BuildContext context, SalarySlipModel slip) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Kirim Slip Gaji'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Slip gaji akan dikirim ke:'),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.email_outlined,
+                      color: AppTheme.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      slip.employee?['email'] ?? '-',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Kirim'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !context.mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(color: AppTheme.primary),
+            SizedBox(width: 16),
+            Text('Mengirim email...'),
+          ],
+        ),
+      ),
+    );
+
+    final result =
+        await context.read<EmailProvider>().sendEmail(slip.id);
+
+    if (!context.mounted) return;
+    Navigator.pop(context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message'] ?? ''),
+        backgroundColor: result['success'] == true
+            ? AppTheme.secondary
+            : AppTheme.accent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  // ─── Build ─────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final slip =
@@ -103,7 +188,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Header Card
+
+            // ── Header ──────────────────────────────────────
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -127,7 +213,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           Text(
                             slip.employeeName,
@@ -174,22 +261,25 @@ class SalarySlipDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Tombol PDF Actions
+            // ── Aksi PDF & Email ────────────────────────────
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Aksi PDF',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Aksi',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600),
+                    ),
                     const Divider(),
                     const SizedBox(height: 8),
+
+                    // Baris tombol PDF
                     Row(
                       children: [
-                        // Tombol Preview PDF
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () =>
@@ -204,14 +294,14 @@ class SalarySlipDetailScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        // Tombol Generate PDF
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () =>
                                 _generatePdf(context, slip),
                             icon: const Icon(
                                 Icons.refresh_outlined),
-                            label: const Text('Generate Ulang'),
+                            label:
+                                const Text('Generate Ulang'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppTheme.primary,
                               minimumSize: const Size(0, 44),
@@ -220,13 +310,31 @@ class SalarySlipDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
+
+                    // Tombol Kirim Email
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () =>
+                            _sendEmail(context, slip),
+                        icon: const Icon(Icons.email_outlined),
+                        label: Text(slip.isSent
+                            ? 'Kirim Ulang Email'
+                            : 'Kirim via Email'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.secondary,
+                          minimumSize: const Size(0, 44),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 12),
 
-            // Rekap Kehadiran
+            // ── Rekap Kehadiran ─────────────────────────────
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -243,7 +351,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
                         Expanded(
                           child: _StatBox(
                             label: 'Hari Masuk',
-                            value: '${slip.totalWorkingDays} hari',
+                            value:
+                                '${slip.totalWorkingDays} hari',
                             color: AppTheme.secondary,
                           ),
                         ),
@@ -259,7 +368,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
                         Expanded(
                           child: _StatBox(
                             label: 'Bonus',
-                            value: slip.bonus > 0 ? 'Ada' : '-',
+                            value:
+                                slip.bonus > 0 ? 'Ada' : '-',
                             color: AppTheme.warning,
                           ),
                         ),
@@ -271,7 +381,7 @@ class SalarySlipDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Rincian Gaji
+            // ── Rincian Gaji ────────────────────────────────
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -299,7 +409,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
                     if (slip.bonus > 0)
                       _SalaryRow(
                         label: 'Bonus',
-                        value: Formatters.currency(slip.bonus),
+                        value:
+                            Formatters.currency(slip.bonus),
                         color: AppTheme.secondary,
                       ),
 
@@ -344,7 +455,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            Formatters.currency(slip.totalSalary),
+                            Formatters.currency(
+                                slip.totalSalary),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -359,13 +471,15 @@ class SalarySlipDetailScreen extends StatelessWidget {
               ),
             ),
 
-            if (slip.notes != null && slip.notes!.isNotEmpty) ...[
+            if (slip.notes != null &&
+                slip.notes!.isNotEmpty) ...[
               const SizedBox(height: 12),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     children: [
                       const Text('Catatan',
                           style: TextStyle(
@@ -388,6 +502,8 @@ class SalarySlipDetailScreen extends StatelessWidget {
     );
   }
 }
+
+// ── Widget Helpers ──────────────────────────────────────────────
 
 class _StatBox extends StatelessWidget {
   final String label;
