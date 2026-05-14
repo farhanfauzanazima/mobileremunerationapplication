@@ -418,6 +418,14 @@ class _AdminDrawer extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
+          _DrawerTile(
+            icon: Icons.bar_chart_outlined,
+            label: 'Laporan Gaji',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.reports);
+            },
+          ),
         ],
       ),
     );

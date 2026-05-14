@@ -344,6 +344,30 @@ class _OwnerDrawer extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
+          _DrawerItem(
+            icon: Icons.bar_chart_outlined,
+            label: 'Laporan Gaji',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.reports);
+            },
+          ),
+          _DrawerItem(
+            icon: Icons.analytics_outlined,
+            label: 'Statistik',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.statistics);
+            },
+          ),
+          _DrawerItem(
+            icon: Icons.manage_search_outlined,
+            label: 'Activity Log',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.activityLog);
+            },
+          ),
         ],
       ),
     );

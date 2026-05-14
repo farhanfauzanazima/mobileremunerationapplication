@@ -29,6 +29,8 @@ class AppRoutes {
   static const String emailHistory  = '/email/history';
   static const String emailBulkSend = '/email/bulk-send';
 
+  // Tambahkan routes baru
   static const String reports     = '/reports';
+  static const String statistics  = '/statistics';
   static const String activityLog = '/activity-logs';
 }

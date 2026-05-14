@@ -28,6 +28,10 @@ import 'package:mobileremunerationapplication/features/dashboard/providers/dashb
 import 'package:mobileremunerationapplication/features/dashboard/presentation/screens/dashboard_owner_screen.dart';
 import 'package:mobileremunerationapplication/features/dashboard/presentation/screens/dashboard_head_screen.dart';
 import 'package:mobileremunerationapplication/features/dashboard/presentation/screens/dashboard_admin_screen.dart';
+import 'package:mobileremunerationapplication/features/reports/providers/report_provider.dart';
+import 'package:mobileremunerationapplication/features/reports/presentation/screens/report_screen.dart';
+import 'package:mobileremunerationapplication/features/reports/presentation/screens/statistics_screen.dart';
+import 'package:mobileremunerationapplication/features/reports/presentation/screens/activity_log_screen.dart';
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/constants/app_constants.dart';
 import 'package:mobileremunerationapplication/app/routes.dart';
@@ -47,6 +51,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PdfProvider()),
         ChangeNotifierProvider(create: (_) => EmailProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -86,10 +91,15 @@ class App extends StatelessWidget {
           AppRoutes.emailHistory:  (_) => const EmailHistoryScreen(),
           AppRoutes.emailBulkSend: (_) => const EmailBulkSendScreen(),
 
-          // Dashboard (real screens)
+          // Dashboard
           AppRoutes.dashboardOwner: (_) => const DashboardOwnerScreen(),
           AppRoutes.dashboardHead:  (_) => const DashboardHeadScreen(),
           AppRoutes.dashboardAdmin: (_) => const DashboardAdminScreen(),
+
+          // Reports
+          AppRoutes.reports:     (_) => const ReportScreen(),
+          AppRoutes.statistics:  (_) => const StatisticsScreen(),
+          AppRoutes.activityLog: (_) => const ActivityLogScreen(),
         },
       ),
     );

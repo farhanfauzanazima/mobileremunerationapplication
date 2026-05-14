@@ -417,6 +417,22 @@ class _HeadDrawer extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
+          _DrawerTile(
+            icon: Icons.bar_chart_outlined,
+            label: 'Laporan Gaji',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.reports);
+            },
+          ),
+          _DrawerTile(
+            icon: Icons.analytics_outlined,
+            label: 'Statistik',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.statistics);
+            },
+          ),
         ],
       ),
     );
