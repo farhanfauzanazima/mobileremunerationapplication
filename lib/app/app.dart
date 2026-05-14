@@ -24,6 +24,10 @@ import 'package:mobileremunerationapplication/features/salary_slip/presentation/
 import 'package:mobileremunerationapplication/features/email/providers/email_provider.dart';
 import 'package:mobileremunerationapplication/features/email/presentation/screens/email_history_screen.dart';
 import 'package:mobileremunerationapplication/features/email/presentation/screens/email_bulk_send_screen.dart';
+import 'package:mobileremunerationapplication/features/dashboard/providers/dashboard_provider.dart';
+import 'package:mobileremunerationapplication/features/dashboard/presentation/screens/dashboard_owner_screen.dart';
+import 'package:mobileremunerationapplication/features/dashboard/presentation/screens/dashboard_head_screen.dart';
+import 'package:mobileremunerationapplication/features/dashboard/presentation/screens/dashboard_admin_screen.dart';
 import 'package:mobileremunerationapplication/shared/theme/app_theme.dart';
 import 'package:mobileremunerationapplication/core/constants/app_constants.dart';
 import 'package:mobileremunerationapplication/app/routes.dart';
@@ -42,6 +46,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SalarySlipProvider()),
         ChangeNotifierProvider(create: (_) => PdfProvider()),
         ChangeNotifierProvider(create: (_) => EmailProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -81,154 +86,11 @@ class App extends StatelessWidget {
           AppRoutes.emailHistory:  (_) => const EmailHistoryScreen(),
           AppRoutes.emailBulkSend: (_) => const EmailBulkSendScreen(),
 
-          // Dashboard
-          AppRoutes.dashboardOwner: (_) => const _DashboardPlaceholder(role: 'Owner'),
-          AppRoutes.dashboardHead:  (_) => const _DashboardPlaceholder(role: 'Kepala Toko'),
-          AppRoutes.dashboardAdmin: (_) => const _DashboardPlaceholder(role: 'Admin Toko'),
+          // Dashboard (real screens)
+          AppRoutes.dashboardOwner: (_) => const DashboardOwnerScreen(),
+          AppRoutes.dashboardHead:  (_) => const DashboardHeadScreen(),
+          AppRoutes.dashboardAdmin: (_) => const DashboardAdminScreen(),
         },
-      ),
-    );
-  }
-}
-
-// ── Dashboard Placeholder ───────────────────────────────────────
-
-class _DashboardPlaceholder extends StatelessWidget {
-  final String role;
-  const _DashboardPlaceholder({required this.role});
-
-  @override
-  Widget build(BuildContext context) {
-    final isOwner = role == 'Owner';
-    final isHead  = role == 'Kepala Toko';
-    final isAdmin = role == 'Admin Toko';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Dashboard $role'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.profile),
-          ),
-        ],
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.check_circle,
-                  color: AppTheme.secondary, size: 64),
-              const SizedBox(height: 16),
-              Text(
-                'Login sebagai $role ✅',
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-
-              // Menu Owner only
-              if (isOwner) ...[
-                _MenuButton(
-                  icon: Icons.category_outlined,
-                  label: 'Kategori Gaji',
-                  onTap: () => Navigator.pushNamed(
-                      context, AppRoutes.salaryCategories),
-                ),
-                const SizedBox(height: 12),
-              ],
-
-              // Menu Owner & Head
-              if (isOwner || isHead) ...[
-                _MenuButton(
-                  icon: Icons.people_outline,
-                  label: 'Data Karyawan',
-                  onTap: () => Navigator.pushNamed(
-                      context, AppRoutes.employees),
-                ),
-                const SizedBox(height: 12),
-                _MenuButton(
-                  icon: Icons.date_range_outlined,
-                  label: 'Periode Penggajian',
-                  onTap: () => Navigator.pushNamed(
-                      context, AppRoutes.payrollPeriods),
-                ),
-                const SizedBox(height: 12),
-              ],
-
-              // Menu semua role
-              if (isOwner || isHead || isAdmin) ...[
-                _MenuButton(
-                  icon: Icons.receipt_long_outlined,
-                  label: 'Slip Gaji',
-                  onTap: () => Navigator.pushNamed(
-                      context, AppRoutes.salarySlips),
-                ),
-                const SizedBox(height: 12),
-                _MenuButton(
-                  icon: Icons.send_outlined,
-                  label: 'Kirim Email Massal',
-                  onTap: () => Navigator.pushNamed(
-                      context, AppRoutes.emailBulkSend),
-                ),
-                const SizedBox(height: 12),
-                _MenuButton(
-                  icon: Icons.history_outlined,
-                  label: 'Riwayat Email',
-                  onTap: () => Navigator.pushNamed(
-                      context, AppRoutes.emailHistory),
-                ),
-                const SizedBox(height: 12),
-              ],
-
-              // Logout
-              Consumer<AuthProvider>(
-                builder: (context, auth, _) => _MenuButton(
-                  icon: Icons.logout,
-                  label: 'Logout',
-                  color: AppTheme.accent,
-                  onTap: () async {
-                    await auth.logout();
-                    if (!context.mounted) return;
-                    Navigator.pushReplacementNamed(
-                        context, AppRoutes.login);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MenuButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color color;
-
-  const _MenuButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color = AppTheme.primary,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        minimumSize: const Size(220, 48),
       ),
     );
   }
