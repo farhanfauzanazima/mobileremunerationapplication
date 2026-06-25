@@ -368,4 +368,4 @@ Proyek ini dibuat untuk keperluan pengembangan sistem remunerasi restoran.
 
 ---
 
-*Dibuat dengan ❤️ menggunakan Laravel 12*
+*Dibuat dengan ❤️ menggunakan Flutter*
