@@ -1,4 +1,4 @@
-# 📱 Mobile Remunerasi Application
+# Mobile Remunerasi Application
 
 Aplikasi mobile berbasis **Flutter/Dart** untuk sistem penggajian (remunerasi) restoran. Aplikasi ini merupakan frontend mobile yang terhubung dengan backend REST API Laravel.
 
@@ -7,7 +7,7 @@ Aplikasi mobile berbasis **Flutter/Dart** untuk sistem penggajian (remunerasi) r
 
 ---
 
-## 📋 Daftar Isi
+## Daftar Isi
 
 - [Tentang Proyek](#tentang-proyek)
 - [Fitur](#fitur)
@@ -24,7 +24,7 @@ Aplikasi mobile berbasis **Flutter/Dart** untuk sistem penggajian (remunerasi) r
 
 ---
 
-## 📖 Tentang Proyek
+## Tentang Proyek
 
 Aplikasi ini dibangun untuk menyelesaikan masalah penggajian manual di restoran yang sebelumnya memakan waktu 4–6 jam karena admin harus membuat slip gaji satu per satu, mengkonversi ke PDF, lalu mengirim secara manual.
 
@@ -35,15 +35,15 @@ Sistem ini **bukan** sistem payroll/transfer gaji, melainkan:
 
 ---
 
-## ✨ Fitur
+## Fitur
 
-### 🔐 Autentikasi
+### Autentikasi
 - Login dengan email & password
 - Splash screen dengan auto-redirect berdasarkan role
 - Logout dengan konfirmasi
 - Edit profil & ganti password
 
-### 👑 Owner
+### Owner
 - Kelola **Kategori Gaji** (CRUD) — gaji pokok, tunjangan, potongan
 - Lihat **Data Karyawan**
 - Kelola **Periode Penggajian** (Open/Close/Reopen)
@@ -53,14 +53,14 @@ Sistem ini **bukan** sistem payroll/transfer gaji, melainkan:
 - **Statistik Tren** 12 periode terakhir
 - **Activity Log** semua pengguna
 
-### 👔 Kepala Toko (Head)
+### Kepala Toko/Staf HR (Head)
 - Kelola **Data Karyawan** (CRUD + search + filter)
 - Kelola **Periode Penggajian**
 - Lihat & buat **Slip Gaji**
 - **Dashboard Kepala Toko** — ringkasan & slip terbaru
 - **Laporan Rekap Gaji** + Statistik
 
-### 🧑‍💼 Admin
+### Admin
 - Buat **Slip Gaji** (single & bulk generate)
 - **Preview & Generate PDF** slip gaji
 - **Kirim Email** slip gaji (single & massal)
@@ -69,7 +69,7 @@ Sistem ini **bukan** sistem payroll/transfer gaji, melainkan:
 
 ---
 
-## 🛠️ Teknologi
+## Teknologi
 
 | Kategori | Teknologi |
 |---|---|
@@ -84,7 +84,7 @@ Sistem ini **bukan** sistem payroll/transfer gaji, melainkan:
 
 ---
 
-## 📁 Struktur Folder
+## Struktur Folder
 
 ```
 lib/
@@ -132,7 +132,7 @@ feature/
 
 ---
 
-## ✅ Prasyarat
+## Prasyarat
 
 Pastikan sudah terinstall:
 
@@ -150,7 +150,7 @@ dart --version
 
 ---
 
-## 🚀 Instalasi
+## Instalasi
 
 ### 1. Clone Repository
 
@@ -179,7 +179,7 @@ php artisan serve --host=0.0.0.0 --port=8000
 
 ---
 
-## ⚙️ Konfigurasi
+## Konfigurasi
 
 ### Base URL API
 
@@ -218,7 +218,7 @@ ifconfig
 
 ---
 
-## ▶️ Menjalankan Aplikasi
+## Menjalankan Aplikasi
 
 ### Lihat device yang tersedia
 
@@ -256,7 +256,7 @@ APK tersimpan di: `build/app/outputs/flutter-apk/app-release.apk`
 
 ---
 
-## 👥 Role & Akses
+## Role & Akses
 
 | Menu / Fitur | Owner | Head | Admin |
 |---|:---:|:---:|:---:|
@@ -276,7 +276,7 @@ APK tersimpan di: `build/app/outputs/flutter-apk/app-release.apk`
 
 ---
 
-## 🔑 Akun Default
+## Akun Default
 
 Akun ini tersedia setelah menjalankan seeder di backend:
 
@@ -288,7 +288,7 @@ Akun ini tersedia setelah menjalankan seeder di backend:
 
 ---
 
-## 🗂️ Git Branch Strategy
+## Git Branch Strategy
 
 Setiap fitur dikerjakan di branch tersendiri lalu di-merge ke `main`:
 
@@ -307,7 +307,7 @@ Setiap fitur dikerjakan di branch tersendiri lalu di-merge ke `main`:
 
 ---
 
-## 🧮 Formula Perhitungan Gaji
+## Formula Perhitungan Gaji
 
 ```
 Total Gaji Bersih = Gaji Pokok
@@ -321,7 +321,7 @@ Catatan: Total tidak boleh negatif (minimum = 0)
 
 ---
 
-## 🔗 Relasi dengan Backend
+## Relasi dengan Backend
 
 Aplikasi ini mengkonsumsi **±47 endpoint** dari backend Laravel. Setiap request menyertakan:
 
@@ -335,7 +335,7 @@ Token disimpan di **SharedPreferences** setelah login dan di-inject otomatis ole
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 ```yaml
 dependencies:
@@ -354,15 +354,18 @@ dependencies:
 
 ---
 
-## 👨‍💻 Developer
+## Developer
 
 **Farhan Fauzan Azima**
-Program Studi Rekayasa Perangkat Lunak
-Universitas Cipasung Tasikmalaya
-2026
+- GitHub: [@farhanfauzanazima](https://github.com/farhanfauzanazima)
+- Repository: [mobileremunerationapplication](https://github.com/farhanfauzanazima/mobileremunerationapplication)
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
-Proyek ini dibuat untuk keperluan akademik (Skripsi/Tugas Akhir).
+Proyek ini dibuat untuk keperluan pengembangan sistem remunerasi restoran.
+
+---
+
+*Dibuat dengan ❤️ menggunakan Laravel 12*
